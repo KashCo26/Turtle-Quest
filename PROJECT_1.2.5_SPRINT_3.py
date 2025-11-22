@@ -70,6 +70,9 @@ intro.write("Welcome, player, to Turtle Quest! \nMy name's Trotter and you are\n
 
 #----Game variables ----
 terminate = False
+alive = True
+user_lives = 5
+bowser_lives = 5
 stop1 = False
 stop2 = False
 riddle = "I speak without a mouth and hear without ears. I have no body, but I come alive with the wind. What am I? (ghost, secret, echo, wind are your options)"
@@ -293,6 +296,7 @@ def math(x, y): #takes parameters (x,y) as it is an onclick function
 def boss_dialogue():
     '''changes the background to inside the castle and starts a dialogue with
     the bad guy. Then, it calls the boss_fight function'''
+    wn.onkeypress(None, "r")
     intro.clear()
     river.clear()
     player.goto(100, -50)
@@ -340,10 +344,7 @@ def boss_fight():
     intro1.write("Click a to attack!", font=style, align='center')
     intro.goto(-300, 200)
     river.goto(300, 200)
-    user_lives = 5
-    bowser_lives = 5
-    while user_lives > 0 and bowser_lives > 0:
-        time.sleep(2)
+    while alive:
         bowser_attack()
     if user_lives == 0:
         dead_end()
@@ -353,7 +354,7 @@ def boss_fight():
 def if_collide(): #code from 1.1.8 but slightly modified
     '''Program goes through every ball in each fireball list and checks if it 
     has collided with the user or bowser. If so, they lose a life.'''
-    global fireballs, bowser_balls, user_lives, bowser_lives
+    global fireballs, bowser_balls, user_lives, bowser_lives, alive
     intro.clear()
     river.clear()
     intro.write(f"Lives left: {user_lives}", font=style, align='center')
@@ -368,45 +369,60 @@ def if_collide(): #code from 1.1.8 but slightly modified
             user_lives -= 1
             vt.hideturtle()
             bowser_balls.remove(vt)
-    if user_lives == 0:
+    if user_lives <= 0:
+        user_lives = 0
+        alive = False
         dead_end()
-    elif bowser_lives == 0:
+    elif bowser_lives <= 0:
+        bowser_lives = 0
+        alive = False
         win()
 
 def bowser_attack():
     '''Updates the lives left in the program and initializes the turtles for when bowser attacks'''
-    global fireballs, bowser_balls, user_lives, bowser_lives
-    '''code from 1.2.3 Apple Avalanche but slightly modified'''
-    ball = trtl.Turtle()
-    ball.hideturtle()
-    ball.penup()
-    ball.goto(280, -150)
-    ball.showturtle()
-    ball.shape(bowser_fireball)
-    bowser_balls.append(ball)
-    ball.goto(-300, -150)
-    if user_lives == 0:
+    global fireballs, bowser_balls, user_lives, bowser_lives, alive
+    if alive:
+        '''code from 1.2.3 Apple Avalanche but slightly modified'''
+        time.sleep(2)
+        ball = trtl.Turtle()
+        ball.hideturtle()
+        ball.penup()
+        ball.goto(280, -150)
+        ball.showturtle()
+        ball.shape(bowser_fireball)
+        bowser_balls.append(ball)
+        ball.goto(-300, -150)
+    if user_lives <= 0:
+        user_lives = 0
+        alive = False
         dead_end()
-    elif bowser_lives == 0:
+    elif bowser_lives <= 0:
+        bowser_lives = 0
+        alive = False
         win()
     if_collide()
            
 
 def attack():
     '''Updates the lives left and initializes the turtles for when the user clicks a'''
-    global fireballs, bowser_balls, user_lives, bowser_lives
-    '''code from 1.2.3 Apple Avalanche but slightly modified'''
-    fireball = trtl.Turtle()
-    fireball.hideturtle()
-    fireball.penup()
-    fireball.goto(-280, -150)
-    fireball.showturtle()
-    fireball.shape(turtle_fireball)
-    fireballs.append(fireball)
-    fireball.goto(300, -150)
-    if user_lives == 0:
+    global fireballs, bowser_balls, user_lives, bowser_lives, alive
+    if alive:
+        '''code from 1.2.3 Apple Avalanche but slightly modified'''
+        fireball = trtl.Turtle()
+        fireball.hideturtle()
+        fireball.penup()
+        fireball.goto(-280, -150)
+        fireball.showturtle()
+        fireball.shape(turtle_fireball)
+        fireballs.append(fireball)
+        fireball.goto(300, -150)
+    if user_lives <= 0:
+        user_lives = 0
+        alive = False
         dead_end()
-    elif bowser_lives == 0:
+    elif bowser_lives <= 0:
+        bowser_lives = 0
+        alive = False
         win()
     if_collide()
 
@@ -432,6 +448,8 @@ def win():
     river.clear()
     intro.clear()
     intro1.clear()
+    intro.hideturtle()
+    river.hideturtle()
     queen.hideturtle()
 
 def dead_end(x=None, y=None): #takes parameters (x,y) as it is an onclick function
